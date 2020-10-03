@@ -51,13 +51,11 @@ def addNew():
 
     print(bcolors.GREEN + '** ADDING NEW TRAINING LOG' + bcolors.ENDC)
     
-    print(bcolors.BOLD)
-    newDate = makeFilename( input('Enter date of training session ->'), 0)
-    newStart = makeFilename( input('Enter the time it started ->'), 1)
-    newHours = input('Enter duration -> ')
-    newTags = input('Enter Tags -> ')
-    newNotes = input('Enter Notes -> ')
-    print(bcolors.ENDC)
+    newDate = makeFilename( input(bcolors.GREEN + '                  ╭─Enter date of training session -> ' + bcolors.ENDC), 0)
+    newStart = makeFilename( input(bcolors.GREEN + '╔══════════════╗  ├─Enter the time it started -> ' + bcolors.ENDC), 1)
+    newHours = input(bcolors.GREEN +'║ TRAINING LOG ╟──┼─Enter duration -> ' + bcolors.ENDC)
+    newTags = input(bcolors.GREEN +'╚══════════════╝  ├─Enter Tags -> ' + bcolors.ENDC)
+    newNotes = input(bcolors.GREEN +'                  ╰─Enter Notes -> ' + bcolors.ENDC)
     
     with open('journalEntries/'+newDate+'_'+newStart, 'w') as f:
         print("Tags: " + newTags, file=f)
