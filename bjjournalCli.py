@@ -3,16 +3,11 @@
 import sys
 import os
 import re
+from colorama import init, deinit, Fore, Back, Style
+#for clearing terminal in Windows and Unix too
+os.system('cls' if os.name == 'nt' else 'clear')
 
-class bcolors:
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+init()
 
 def makeFilename(text, mode):
     ##This function makes the string strictly alphanumeric except the character specified by the variable 'pop', thus ok for a filename.
@@ -49,13 +44,13 @@ def editInfo():
 
 def addNew():
 
-    print(bcolors.GREEN + '** ADDING NEW TRAINING LOG' + bcolors.ENDC)
+    print(Fore.YELLOW + '\n** ADDING NEW TRAINING LOG' + Style.RESET_ALL)
     
-    newDate = makeFilename( input(bcolors.GREEN + '                  ╭─Enter date of training session -> ' + bcolors.ENDC), 0)
-    newStart = makeFilename( input(bcolors.GREEN + '╔══════════════╗  ├─Enter the time it started -> ' + bcolors.ENDC), 1)
-    newHours = input(bcolors.GREEN +'║ TRAINING LOG ╟──┼─Enter duration -> ' + bcolors.ENDC)
-    newTags = input(bcolors.GREEN +'╚══════════════╝  ├─Enter Tags -> ' + bcolors.ENDC)
-    newNotes = input(bcolors.GREEN +'                  ╰─Enter Notes -> ' + bcolors.ENDC)
+    newDate = makeFilename( input(Fore.GREEN + '                  ╭─Enter date of training session -> ' + Style.RESET_ALL + Fore.CYAN), 0)
+    newStart = makeFilename( input(Style.RESET_ALL +Fore.GREEN + '╔══════════════╗  ├─Enter the time it started -> ' + Style.RESET_ALL + Fore.CYAN), 1)
+    newHours = input(Style.RESET_ALL +Fore.GREEN +'║ ' + Fore.BLUE + 'TRAINING LOG' + Fore.GREEN + ' ╟──┼─Enter duration -> ' + Style.RESET_ALL + Fore.CYAN)
+    newTags = input(Style.RESET_ALL +Fore.GREEN +'╚══════════════╝  ├─Enter Tags -> ' + Style.RESET_ALL + Fore.CYAN)
+    newNotes = input(Style.RESET_ALL + Fore.GREEN +'                  ╰─Enter Notes -> ' + Style.RESET_ALL + Fore.CYAN)
     
     with open('journalEntries/'+newDate+'_'+newStart, 'w') as f:
         print("Tags: " + newTags, file=f)
@@ -65,7 +60,7 @@ def addNew():
 
 ####Main Program starts here
 
-print(bcolors.BLUE + '*** BBJOURNAL ***' + bcolors.ENDC)
+print(Fore.BLUE + '*** BBJOURNAL ***' + Style.RESET_ALL)
 
 
 ##Making directory for fighter's info, if it exists throw error 
@@ -73,7 +68,7 @@ print(bcolors.BLUE + '*** BBJOURNAL ***' + bcolors.ENDC)
 try: 
     os.mkdir('info')
 except OSError:
-    print(bcolors.GREEN + '*' + bcolors.ENDC + ' Config loaded!')
+    print(Fore.GREEN + '*' + Style.RESET_ALL + ' Config loaded!')
 else:
     with open('info/userInfo', 'w') as f:
         print("++++ PROFILE INFO ++++", file=f)
@@ -83,14 +78,14 @@ else:
 try: 
     os.mkdir('journalEntries')
 except OSError:
-    print(bcolors.GREEN + '*' + bcolors.ENDC + ' Journal Entries found!')
+    print(Fore.GREEN + '*' + Style.RESET_ALL + ' Journal Entries found!')
 
 
 while 1:
 
     printInfo()
 
-    print(" > Options:\n· Press 1 to add a new training log\n· Press 2 for editing your profile info\n· Press 0 to exit.")
+    print(" > Options:\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press 1 to add a new training log\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press 2 for editing your profile info\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press 0 to exit.")
     choice = input("Enter your choice here -> ")
     
     if choice == '1':
@@ -103,8 +98,8 @@ while 1:
         print("\nBye :)\n\n")
         sys.exit()
 
-    print(bcolors.FAIL + 'Please enter a valid value' + bcolors.ENDC)
+    print(Fore.RED + 'Please enter a valid value' + Style.RESET_ALL)
 
 
-
+deinit()
 

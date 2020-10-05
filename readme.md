@@ -1,3 +1,3 @@
-BJJ JOURNAL
+BJJOURNAL
 
-This is a LibreOffice Calc file with statistics to help with the tracking of progress in Brazilian Jiu Jitsu.
+This is an open source python program with statistics to help with the tracking of progress in Brazilian Jiu Jitsu.
