@@ -27,7 +27,62 @@ def printInfo():
     
     inf = open('info/userInfo', 'r')
     file_contents = inf.read()
-    print ("\n\n"+file_contents)
+    
+    print("\n\n")
+
+
+
+    if "Belt: White" in file_contents:
+        belt_color = Back.WHITE
+        letter_color = Fore.BLACK
+        stripe_area_color = Back.BLACK
+
+    elif "Belt: Blue" in file_contents:
+        belt_color = Back.BLUE 
+        letter_color = Fore.WHITE
+        stripe_area_color = Back.BLACK
+    
+    elif "Belt: Purple" in file_contents:
+        belt_color = Back.PURPLE 
+        letter_color = Fore.WHITE
+        stripe_area_color = Back.BLACK
+    
+    elif "Belt: Brown" in file_contents:
+        belt_color = Back.BROWN 
+        letter_color = Fore.WHITE
+        stripe_area_color = Back.BLACK
+    
+    elif "Belt: Black" in file_contents:
+        belt_color = Back.BLACK 
+        letter_color = Fore.WHITE
+        stripe_area_color = Back.RED
+    
+
+    stripe_no = 0
+
+    #double regex to find out where the stripe info is written and how many stripes are there
+    if "Stripes:" in file_contents:
+        stripe_no = re.findall(r'Stripes: \d+', file_contents)
+        stripe_no = re.findall(r'\d+', stripe_no[0])
+        
+
+    name = "Unnamed Grappler" 
+
+    if "Name:" in file_contents:
+        name = re.findall(r'Name: .*', file_contents)
+        name = re.sub(r'Name: ','', name[0])
+
+
+    #Printing the belt graphic
+    print(belt_color + '   ' + letter_color + name + ' ' + stripe_area_color + '  ', end = '' )
+
+    if stripe_no == '0' :
+        print('  ' + Style.RESET_ALL, end = '')
+    else:
+        for i in range(int(stripe_no[0])) :
+            print(belt_color + ' ' + stripe_area_color + ' ', end = '' )
+        print(' ' + Style.RESET_ALL)
+
     inf.close()
 
 
