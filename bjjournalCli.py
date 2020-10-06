@@ -20,70 +20,116 @@ def makeFilename(text, mode):
         pop = '.'
 
     text = re.sub('[^A-Za-z0-9]+', pop , text)
-    return text;
+    return text
+
+
+def checkAndFormatBeltColor(color_str):
+    #Checks the belt color name and formats it properly in case it is messed up, because it is important
+    
+    if color_str.lower() == 'white':
+        color_str = 'White'
+    
+    elif color_str.lower() == 'blue':
+        color_str = 'Blue'
+    
+    elif color_str.lower() == 'purple':
+        color_str = 'Purple'
+
+    elif color_str.lower() == 'brown':
+        color_str = 'Brown'
+    
+    elif color_str.lower() == 'black':
+        color_str = 'Black'
+
+    else:
+        color_str = input(Style.RESET_ALL +Fore.GREEN +'║ ' + Fore.BLUE + 'NEW PROFILE ' + Fore.GREEN + ' ╟──┼─What color of belt do you have?' + Fore.RED + '(Input a valid color!)' + Fore.GREEN + ' -> ' + Style.RESET_ALL + Fore.CYAN)
+        color_str = checkAndFormatBeltColor(color_str)
+
+    return color_str
+
+def getInfo():
+
+    print(Fore.YELLOW + '\n** ADDING NEW USER PROFILE' + Style.RESET_ALL)
+
+    newName = input(Fore.GREEN + '                  ╭─What\'s your name? -> ' + Style.RESET_ALL + Fore.CYAN)
+    
+    newClub = input(Style.RESET_ALL +Fore.GREEN + '╔══════════════╗  ├─What is the name of your club -> ' + Style.RESET_ALL + Fore.CYAN)
+    
+    newBelt = input(Style.RESET_ALL +Fore.GREEN +'║ ' + Fore.BLUE + 'NEW PROFILE ' + Fore.GREEN + ' ╟──┼─What color of belt do you have? -> ' + Style.RESET_ALL + Fore.CYAN)
+    newBelt = checkAndFormatBeltColor(newBelt)
+    
+    newStripes = input(Style.RESET_ALL +Fore.GREEN +'╚══════════════╝  ├─How many stripes do you have? -> ' + Style.RESET_ALL + Fore.CYAN)
+    newAchievements = input(Style.RESET_ALL + Fore.GREEN +'                  ╰─Any additional notes/achievements (Championships etc.) -> ' + Style.RESET_ALL + Fore.CYAN)
+
+    with open('info/userInfo', 'w') as f:
+        print("++++ PROFILE INFO ++++\n" + 'Name: ' + newName + '\nClub: ' + newClub + '\nBelt: ' +  newBelt + '\nStripes: ' + newStripes + '\nAchievements: ' + newAchievements, file=f)
 
 
 def printInfo():
-    
-    inf = open('info/userInfo', 'r')
-    file_contents = inf.read()
-    
-    print("\n\n")
+   
+    try:
+        inf = open('info/userInfo', 'r')
+    except OSError:
+        print('No Config found! Want to make a new user profile?')
+        getInfo()
+        printInfo()
+    else:
+        #if the opening of the file fails, this is not executed and the function is called again (see 'except OSerror' section 5 lines up)
+        print(Fore.GREEN + '*' + Style.RESET_ALL + ' Config loaded!')
+        file_contents = inf.read()
 
+        if "Belt: White" in file_contents:
+            belt_color = Back.WHITE
+            letter_color = Fore.BLACK
+            stripe_area_color = Back.BLACK
 
-
-    if "Belt: White" in file_contents:
-        belt_color = Back.WHITE
-        letter_color = Fore.BLACK
-        stripe_area_color = Back.BLACK
-
-    elif "Belt: Blue" in file_contents:
-        belt_color = Back.BLUE 
-        letter_color = Fore.WHITE
-        stripe_area_color = Back.BLACK
-    
-    elif "Belt: Purple" in file_contents:
-        belt_color = Back.PURPLE 
-        letter_color = Fore.WHITE
-        stripe_area_color = Back.BLACK
-    
-    elif "Belt: Brown" in file_contents:
-        belt_color = Back.BROWN 
-        letter_color = Fore.WHITE
-        stripe_area_color = Back.BLACK
-    
-    elif "Belt: Black" in file_contents:
-        belt_color = Back.BLACK 
-        letter_color = Fore.WHITE
-        stripe_area_color = Back.RED
-    
-
-    stripe_no = 0
-
-    #double regex to find out where the stripe info is written and how many stripes are there
-    if "Stripes:" in file_contents:
-        stripe_no = re.findall(r'Stripes: \d+', file_contents)
-        stripe_no = re.findall(r'\d+', stripe_no[0])
+        elif "Belt: Blue" in file_contents:
+            belt_color = Back.BLUE 
+            letter_color = Fore.WHITE
+            stripe_area_color = Back.BLACK
+        
+        elif "Belt: Purple" in file_contents:
+            belt_color = Back.PURPLE 
+            letter_color = Fore.WHITE
+            stripe_area_color = Back.BLACK
+        
+        elif "Belt: Brown" in file_contents:
+            belt_color = Back.BROWN 
+            letter_color = Fore.WHITE
+            stripe_area_color = Back.BLACK
+        
+        elif "Belt: Black" in file_contents:
+            belt_color = Back.BLACK 
+            letter_color = Fore.WHITE
+            stripe_area_color = Back.RED
         
 
-    name = "Unnamed Grappler" 
+        stripe_no = 0
 
-    if "Name:" in file_contents:
-        name = re.findall(r'Name: .*', file_contents)
-        name = re.sub(r'Name: ','', name[0])
+        #double regex to find out where the stripe info is written and how many stripes are there
+        if "Stripes:" in file_contents:
+            stripe_no = re.findall(r'Stripes: \d+', file_contents)
+            stripe_no = re.findall(r'\d+', stripe_no[0])
+            
+
+        name = "Unnamed Grappler" 
+
+        if "Name:" in file_contents:
+            name = re.findall(r'Name: .*', file_contents)
+            name = re.sub(r'Name: ','', name[0])
 
 
-    #Printing the belt graphic
-    print(belt_color + '   ' + letter_color + name + ' ' + stripe_area_color + '  ', end = '' )
+        #Printing the belt graphic
+        print(belt_color + '   ' + letter_color + name + ' ' + stripe_area_color + '  ', end = '' )
 
-    if stripe_no == '0' :
-        print('  ' + Style.RESET_ALL, end = '')
-    else:
-        for i in range(int(stripe_no[0])) :
-            print(belt_color + ' ' + stripe_area_color + ' ', end = '' )
-        print(' ' + Style.RESET_ALL)
+        if stripe_no == '0' :
+            print('  ' + Style.RESET_ALL, end = '')
+        else:
+            for i in range(int(stripe_no[0])) :
+                print(belt_color + ' ' + stripe_area_color + ' ', end = '' )
+            print(' ' + Style.RESET_ALL)
 
-    inf.close()
+        inf.close()
 
 
 def editInfo():
@@ -123,10 +169,10 @@ print(Fore.BLUE + '*** BBJOURNAL ***' + Style.RESET_ALL)
 try: 
     os.mkdir('info')
 except OSError:
-    print(Fore.GREEN + '*' + Style.RESET_ALL + ' Config loaded!')
+    print(Fore.GREEN + '*' + Style.RESET_ALL + ' Config directory \'info\' found!')
 else:
-    with open('info/userInfo', 'w') as f:
-        print("++++ PROFILE INFO ++++", file=f)
+    print('No Config directory found (and thus no \'userInfo\' Config)! Want to make a new user profile?')
+    getInfo()
 
 ##Making dir for training logs, if it exists throw error
 
