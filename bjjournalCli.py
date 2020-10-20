@@ -41,6 +41,18 @@ def makeFilename(text, mode):
     text = re.sub('[^A-Za-z0-9]+', pop , text)
     return text
 
+def checkAndFormatYN(gi_str):
+    
+
+    if gi_str.lower() in ['yes', 'y', 'ye', 'yah', 'ja', 'yeh', 'da']:
+        gi_str = "y" 
+    elif gi_str.lower() in ['no','n','nope','nah','nein','niet', 'wtf']:
+        gi_str = "n"
+    else: 
+        gi_str = input(Style.RESET_ALL +Fore.RED +' (Invalid Answer) '+ Fore.GREEN +'├─Did you wear a Gi? (y/n) -> ' + Style.RESET_ALL + Fore.CYAN)
+        checkAndFormatYN(gi_str)
+
+    return gi_str
 
 def checkAndFormatBeltColor(color_str):
     #Checks the belt color name and formats it properly in case it is messed up, because it is important
@@ -154,13 +166,22 @@ def printTotalTime():
         for journal in journalPath:
             journal=open(journal, 'r')
             journal_contents = journal.readlines()
-            if "Duration:" in journal_contents:
-                tempTime = re.findall(r'Duration: \d+', journal_contents)
-                print("ACTUALLY LOADED DURATION")
-                tempTime = re.findall(r'\d+', tempTime[0])
-                time += tempTime
+            #print(type(journal_contents))
 
-        print(time)
+            r = re.compile("Duration: .*")
+            journal_contents_dur = list(filter(r.match, journal_contents))
+
+            journal_contents_str = ''.join(journal_contents_dur)
+            #print(journal_contents_str)
+
+            if journal_contents_str:
+
+                tempTime = re.findall(r'Duration: \d+', journal_contents_str)
+                tempTime = re.findall(r'\d+', tempTime[0])
+                tempTime_str=''.join(tempTime)
+                time += int(tempTime_str)
+
+        print(Fore.BLUE + "* " + Fore.GREEN + "Total mat time: " + Fore.CYAN + str(time) + Fore.GREEN + " hours!" + Style.RESET_ALL)
     except OSError:
         print(' !! No journalEntries found!')
 
@@ -198,6 +219,9 @@ def addNew():
     newStart = makeFilename( input(Style.RESET_ALL +Fore.GREEN + '╔══════════════╗  ├─Enter the time it started -> ' + Style.RESET_ALL + Fore.CYAN), 1)
     newHours = input(Style.RESET_ALL +Fore.GREEN +'║ ' + Fore.BLUE + 'TRAINING LOG' + Fore.GREEN + ' ╟──┼─Enter duration -> ' + Style.RESET_ALL + Fore.CYAN)
     newTags = input(Style.RESET_ALL +Fore.GREEN +'╚══════════════╝  ├─Enter Tags -> ' + Style.RESET_ALL + Fore.CYAN)
+    newGi = input(Style.RESET_ALL +Fore.GREEN +'                  ├─Did you wear a Gi? (y/n) -> ' + Style.RESET_ALL + Fore.CYAN)
+    #Checking and formatting this answer
+    newGi = checkAndFormatYN(newGi)
     #Getting multiline input from user
     print(Style.RESET_ALL + Fore.GREEN +'                  ╰─Enter Notes (' + Fore.BLUE + 'Double enter to stop taking notes' + Fore.GREEN + '): ' + Style.RESET_ALL + Fore.CYAN)
     newNotes = []
@@ -219,14 +243,19 @@ def addNew():
     newNotesStr = listToString(newNotes)
 
     with open('journalEntries/'+newDate+'_'+newStart, 'w') as f:
+        if ( newGi == 'n' ):
+            print("*** NOGI TRAINING ***", file=f)
+        else:
+            print("*** GI TRAINING ***", file=f)
         print("Tags: " + newTags, file=f)
+        print("Date: " + newDate, file=f)
         print("Duration: " + newHours + " hours", file=f)
         print("-*- Notes: \n\n" + newNotesStr, file=f)
 
 
 ####Main Program starts here
 
-print(Fore.BLUE + '*** BBJOURNAL ***' + Style.RESET_ALL)
+print(Fore.BLUE + '*** BJJOURNAL ***' + Style.RESET_ALL)
 
 
 ##Making directory for fighter's info, if it exists throw error 
