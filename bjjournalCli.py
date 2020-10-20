@@ -153,9 +153,10 @@ def printTotalTime():
         
         for journal in journalPath:
             journal=open(journal, 'r')
-            journal_contents = journal.read()
-            if "Duration:" in journal:
+            journal_contents = journal.readlines()
+            if "Duration:" in journal_contents:
                 tempTime = re.findall(r'Duration: \d+', journal_contents)
+                print("ACTUALLY LOADED DURATION")
                 tempTime = re.findall(r'\d+', tempTime[0])
                 time += tempTime
 
@@ -198,7 +199,7 @@ def addNew():
     newHours = input(Style.RESET_ALL +Fore.GREEN +'║ ' + Fore.BLUE + 'TRAINING LOG' + Fore.GREEN + ' ╟──┼─Enter duration -> ' + Style.RESET_ALL + Fore.CYAN)
     newTags = input(Style.RESET_ALL +Fore.GREEN +'╚══════════════╝  ├─Enter Tags -> ' + Style.RESET_ALL + Fore.CYAN)
     #Getting multiline input from user
-    print(Style.RESET_ALL + Fore.GREEN +'                  ╰─Enter Notes (' + Fore.BLUE + 'Double space to stop taking notes' + Fore.GREEN + '): ' + Style.RESET_ALL + Fore.CYAN)
+    print(Style.RESET_ALL + Fore.GREEN +'                  ╰─Enter Notes (' + Fore.BLUE + 'Double enter to stop taking notes' + Fore.GREEN + '): ' + Style.RESET_ALL + Fore.CYAN)
     newNotes = []
 
     lineOfNote = "NaN"
@@ -250,20 +251,18 @@ while 1:
 
     displayAllInfo()
 
-    print(" > Options:\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press 1 to add a new training log\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press 2 for editing your profile info\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press 0 to exit.")
+    print(" > Options:\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press " + Fore.YELLOW + "1" + Style.RESET_ALL + " to add a new training log\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press " + Fore.YELLOW + "2" + Style.RESET_ALL + " for editing your profile info\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press " + Fore.YELLOW + "0" + Style.RESET_ALL + " to exit.")
     choice = input("Enter your choice here -> ")
     
     if choice == '1':
         addNew()
-        break
-    if choice == '2':
+    elif choice == '2':
         editInfo()
-        break
-    if choice == '0':
+    elif choice == '0':
         print("\nBye :)\n\n")
         sys.exit()
-
-    print(Fore.RED + 'Please enter a valid value' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + 'Please enter a valid value' + Style.RESET_ALL)
 
 
 deinit()
