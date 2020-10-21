@@ -97,8 +97,6 @@ def getInfo():
 
 
 def printBelt(config):
-    #if the opening of the file fails, this is not executed and the function is called again (see 'except OSerror' section 5 lines up)
-    print(Fore.GREEN + '*' + Style.RESET_ALL + ' Config loaded!')
     file_contents = config.read()
 
     if "Belt: White" in file_contents:
@@ -162,29 +160,62 @@ def printTotalTime():
             raise OSError
         
         time = 0
+        GiTime = 0
+        NoGiTime = 0
         
+        r = re.compile("Duration: .*")
+        r2 = re.compile(r"\*\*\* .*GI TRAINING \*\*\*")
+
         for journal in journalPath:
             journal=open(journal, 'r')
             journal_contents = journal.readlines()
-            #print(type(journal_contents))
 
-            r = re.compile("Duration: .*")
             journal_contents_dur = list(filter(r.match, journal_contents))
+            journal_contents_gi = list(filter(r2.match, journal_contents))
 
-            journal_contents_str = ''.join(journal_contents_dur)
-            #print(journal_contents_str)
+            if journal_contents_dur:
+                for i in range(len(journal_contents_dur)):
 
-            if journal_contents_str:
+                    ## For Debugging
+                    # print(journal_contents_gi)
+                    # print(journal_contents_dur)
+                    
+                    if journal_contents_gi[0] == "*** NOGI TRAINING ***\n":
+                        NoGi = 0
+                    else:
+                        NoGi = 1
 
-                tempTime = re.findall(r'Duration: \d+', journal_contents_str)
-                tempTime = re.findall(r'\d+', tempTime[0])
-                tempTime_str=''.join(tempTime)
-                time += int(tempTime_str)
+                    tempTime = re.findall(r'Duration: \d+', journal_contents_dur[i])
+                    tempTime = re.findall(r'\d+', tempTime[0])
+                    tempTime_str=''.join(tempTime)
+                    time += int(tempTime_str)
+                    
+                    if NoGi:
+                        NoGiTime += int(tempTime_str)
+                    else:
+                        GiTime += int(tempTime_str)
 
         print(Fore.BLUE + "* " + Fore.GREEN + "Total mat time: " + Fore.CYAN + str(time) + Fore.GREEN + " hours!" + Style.RESET_ALL)
+        print("├─ "+ Fore.GREEN +" NoGi time: " + Style.RESET_ALL + str(NoGiTime) + Fore.GREEN + " hours" + Style.RESET_ALL)
+        print("╰─ "+ Fore.GREEN +" Gi time: " + Style.RESET_ALL + str(GiTime)  + Fore.GREEN + " hours" + Style.RESET_ALL)
+        
     except OSError:
         print(' !! No journalEntries found!')
 
+
+def printClubAndNotes(config):
+    
+    file_contents = config.read()
+
+    club = re.findall(r'Club:.*', file_contents)
+    club = re.sub(r'Club:','', club[0])
+    
+    print(Fore.GREEN + "Club:" + Fore.BLUE + club + Style.RESET_ALL)
+   
+    ach = re.findall(r'Achievements:.*', file_contents)
+    ach = re.sub(r'Achievements:','', ach[0])
+    
+    print(Fore.GREEN + "Bio:" + Fore.BLUE + ach + Style.RESET_ALL)
 
 def displayAllInfo():
    
@@ -195,8 +226,13 @@ def displayAllInfo():
         getInfo()
         displayAllInfo()
     else:
+        #if the opening of the file fails, this is not executed and the function is called again (see 'except OSerror' section 5 lines up)
+        print(Fore.GREEN + '*' + Style.RESET_ALL + ' Config loaded!')
         printBelt(inf)
         printTotalTime()
+        #placing the reader at the start of the file again
+        inf.seek(0)
+        printClubAndNotes(inf)
         inf.close()
 
 
