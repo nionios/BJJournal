@@ -4,13 +4,17 @@ import sys
 import os
 import re
 import glob
+import getch
 from colorama import init, deinit, Fore, Back, Style
 #for clearing terminal in Windows and Unix too
 os.system('cls' if os.name == 'nt' else 'clear')
 
 class BG:
-    purple='\033[45m'
-    brown='\ '
+    BLACK='\033[48;2;0;0;0m'
+    BROWN='\033[48;2;9;67;58m'
+    PURPLE='\033[48;2;150;0;120m'
+    BLUE='\033[48;2;10;0;88m'
+    WHITE='\033[48;2;255;255;255m'
 
 
 init()
@@ -63,8 +67,8 @@ def checkAndFormatBeltColor(color_str):
     elif color_str.lower() == 'blue':
         color_str = 'Blue'
     
-    elif color_str.lower() == 'purple':
-        color_str = 'Purple'
+    elif color_str.lower() == 'PURPLE':
+        color_str = 'PURPLE'
 
     elif color_str.lower() == 'brown':
         color_str = 'Brown'
@@ -100,30 +104,35 @@ def printBelt(config):
     file_contents = config.read()
 
     if "Belt: White" in file_contents:
-        belt_color = Back.WHITE
+        belt_color = BG.WHITE
         letter_color = Fore.BLACK
-        stripe_area_color = Back.BLACK
+        stripe_area_color = BG.BLACK
 
     elif "Belt: Blue" in file_contents:
-        belt_color = Back.BLUE 
+        belt_color = BG.BLUE 
         letter_color = Fore.WHITE
-        stripe_area_color = Back.BLACK
+        stripe_area_color = BG.BLACK
     
     elif "Belt: Purple" in file_contents:
-        belt_color = Back.PURPLE 
+        belt_color = BG.PURPLE 
         letter_color = Fore.WHITE
-        stripe_area_color = Back.BLACK
+        stripe_area_color = BG.BLACK
     
     elif "Belt: Brown" in file_contents:
-        belt_color = Back.BROWN 
+        belt_color = BG.BROWN 
         letter_color = Fore.WHITE
-        stripe_area_color = Back.BLACK
+        stripe_area_color = BG.BLACK
     
     elif "Belt: Black" in file_contents:
-        belt_color = Back.BLACK 
+        belt_color = BG.BLACK 
         letter_color = Fore.WHITE
-        stripe_area_color = Back.RED
+        stripe_area_color = BG.RED
     
+    else: 
+        belt_color = Style.RESET_ALL 
+        letter_color = Fore.RED + "(Error reading Belt Color)"
+        stripe_area_color = Style.RESET_ALL
+
 
     stripe_no = 0
 
@@ -147,7 +156,7 @@ def printBelt(config):
         print('  ' + Style.RESET_ALL, end = '')
     else:
         for i in range(int(stripe_no[0])) :
-            print(belt_color + ' ' + stripe_area_color + ' ', end = '' )
+            print(BG.WHITE + ' ' + stripe_area_color + ' ', end = '' )
         print(' ' + Style.RESET_ALL)
 
 
@@ -317,8 +326,9 @@ while 1:
     displayAllInfo()
 
     print(" > Options:\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press " + Fore.YELLOW + "1" + Style.RESET_ALL + " to add a new training log\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press " + Fore.YELLOW + "2" + Style.RESET_ALL + " for editing your profile info\n" + Fore.YELLOW + "·" + Style.RESET_ALL + " Press " + Fore.YELLOW + "0" + Style.RESET_ALL + " to exit.")
-    choice = input("Enter your choice here -> ")
-    
+    #choice = input("Enter your choice here -> ")
+    choice = getch.getch()
+
     if choice == '1':
         addNew()
     elif choice == '2':
