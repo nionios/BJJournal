@@ -32,6 +32,25 @@ def listToString(s):
     # return string   
     return str1
 
+def getMultilineInput(lineArray):
+
+    line = "NaN"
+
+    while True:
+        if ( line != "> \n" ):
+            line = "> " + input()
+            #Make a new line 
+            line +="\n"
+        else:
+            lineArray.pop()
+            line ="-*-"
+            lineArray.append(line)
+            break
+        lineArray.append(line)
+
+    #making notes into a string to copy to the file
+    return listToString(lineArray)
+
 def makeFilename(text, mode):
     ##This function makes the string strictly alphanumeric except the character specified by the variable 'pop', thus ok for a filename.
     
@@ -94,10 +113,14 @@ def getInfo():
     newBelt = checkAndFormatBeltColor(newBelt)
     
     newStripes = input(Style.RESET_ALL +Fore.GREEN +'╚══════════════╝  ├─How many stripes do you have? -> ' + Style.RESET_ALL + Fore.CYAN)
-    newAchievements = input(Style.RESET_ALL + Fore.GREEN +'                  ╰─Any additional notes/achievements (Championships etc.) -> ' + Style.RESET_ALL + Fore.CYAN)
+    
+    print(Style.RESET_ALL + Fore.GREEN +'                  ╰─Any additional notes/achievements (Championships etc, '+ Fore.RED +' press enter twice to stop' + Fore.GREEN + '): ' + Style.RESET_ALL + Fore.CYAN)
+    
+    newAchievements = []
+    newAchievementsStr = getMultilineInput(newAchievements)
 
     with open('info/userInfo', 'w') as f:
-        print("++++ PROFILE INFO ++++\n" + 'Name: ' + newName + '\nClub: ' + newClub + '\nBelt: ' +  newBelt + '\nStripes: ' + newStripes + '\nAchievements: ' + newAchievements, file=f)
+        print("++++ PROFILE INFO ++++\n" + 'Name: ' + newName + '\nClub: ' + newClub + '\nBelt: ' +  newBelt + '\nStripes: ' + newStripes + '\nAchievements:\n' + newAchievementsStr, file=f)
 
 
 def printBelt(config):
@@ -126,7 +149,7 @@ def printBelt(config):
     elif "Belt: Black" in file_contents:
         belt_color = BG.BLACK 
         letter_color = Fore.WHITE
-        stripe_area_color = BG.RED
+        stripe_area_color = Back.RED
     
     else: 
         belt_color = Style.RESET_ALL 
@@ -152,12 +175,9 @@ def printBelt(config):
     #Printing the belt graphic
     print(belt_color + '   ' + letter_color + name + ' ' + stripe_area_color + '  ', end = '' )
 
-    if stripe_no == '0' :
-        print('  ' + Style.RESET_ALL, end = '')
-    else:
-        for i in range(int(stripe_no[0])) :
-            print(BG.WHITE + ' ' + stripe_area_color + ' ', end = '' )
-        print(' ' + Style.RESET_ALL)
+    for i in range(int(stripe_no[0])) :
+        print(BG.WHITE + ' ' + stripe_area_color + ' ', end = '' )
+    print(' ' + Style.RESET_ALL)
 
 
 def printTotalTime():
@@ -221,10 +241,15 @@ def printClubAndNotes(config):
     
     print(Fore.GREEN + "Club:" + Fore.BLUE + club + Style.RESET_ALL)
    
-    ach = re.findall(r'Achievements:.*', file_contents)
-    ach = re.sub(r'Achievements:','', ach[0])
+    print(Fore.GREEN + "Bio:" + Style.RESET_ALL)
+
+    #re.MULTILINE is important, it is needed for the regex to match the EOF
+    ach = re.findall(r'^> .*', file_contents, re.MULTILINE)
     
-    print(Fore.GREEN + "Bio:" + Fore.BLUE + ach + Style.RESET_ALL)
+    for i in range(len(ach)):
+        #Remove the '> ' string for display 
+        ach[i] = re.sub(r'> ','', ach[i])
+        print(Fore.BLUE + ach[i] + Style.RESET_ALL)
 
 def displayAllInfo():
    
@@ -271,21 +296,8 @@ def addNew():
     print(Style.RESET_ALL + Fore.GREEN +'                  ╰─Enter Notes (' + Fore.BLUE + 'Double enter to stop taking notes' + Fore.GREEN + '): ' + Style.RESET_ALL + Fore.CYAN)
     newNotes = []
 
-    lineOfNote = "NaN"
+    newNotesStr = getMultilineInput(newNotes)
 
-    while True:
-        if ( lineOfNote != "\n" ):
-            lineOfNote = input()
-            #Make a new line 
-            lineOfNote +="\n"
-        else:
-            lineOfNote ="-*-"
-            newNotes.append(lineOfNote)
-            break
-        newNotes.append(lineOfNote)
-
-    #making notes into a string to copy to the file
-    newNotesStr = listToString(newNotes)
 
     with open('journalEntries/'+newDate+'_'+newStart, 'w') as f:
         if ( newGi == 'n' ):
